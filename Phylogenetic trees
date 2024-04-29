@@ -1,3 +1,5 @@
+#!/usr/bin/Rscript
+
 library(readxl)
 library(dplyr)
 library(ape)
