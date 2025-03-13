@@ -2,7 +2,8 @@
 
 library(readxl)
 library(dplyr)
-#install.packages("ggnewscale")
+#install.packages("ggtreeExtra")
+library(maps)
 library(ape)
 library(phytools)
 library(ggplot2)
@@ -19,87 +20,159 @@ library(ggpmisc)
 library(ggtreeExtra)
 library(tidyr)
 
-#Rabia#####
-#install.packages("tidyr")
+#####Rabia#####
 
 #if (!require("BiocManager", quietly = TRUE))
- # install.packages("BiocManager")
+ #install.packages("BiocManager")
 
-#BiocManager::install("ggtree")
+#BiocManager::install("ggtreeExtra")
 
-#Cargar el archivo de arbol filogenético
-rab_cenasa <- read.tree("/home/secuenciacion_cenasa/Programas_Bioinformaticos/vSNP3/vsnp3_test_dataset/AF2122_test_files/step2/Mbovis-01/Mbovis-01_2024-10-23_10-52-59.tre")
+##### Archivo para arbol filogenético #####
+rab_cenasa <- read.tree("/home/secuenciacion_cenasa/Analisis_corridas/kSNP4/IQ_tree/Aln_RABV_mafft.fa.treefile")
 
-#Visualizar el arbol en primera instancia
 plot(rab_cenasa, type= "p", cex=0.8, edge.width=2, font=3, label.offset=0.0005, edge.lty=1, node.pos=2)
 
 #DF de datos de las muestras
-sample_data <- read_xlsx("Ruta/al/archivo.xlsx")
-sample_data <- sample_data[,c(1,2,4,5)]
-colnames(sample_data) <- c("ID", "Serotipo", "RS", "Estado")
+sample_data <- read_xlsx("/home/secuenciacion_cenasa/Analisis_corridas/kSNP4/Casos_de_virus.xlsx", sheet = "Rabia")
+
+#sample_data <- sample_data[,c(1,2,4,5)]
+#colnames(sample_data) <- c("ID", "Serotipo", "RS", "Estado")
 str(sample_data)
 
-#En caso que se quiera cambiar el tipo de datos
 #sample_data$Año <- as.character(sample_data$Año)
 
-#Info. para el hm
+##### Info. para el hm #####
 Country <- data.frame("Estado" = sample_data$Estado)
 rownames(Country) <- sample_data$ID
 
-#Info para el hm2
-Año <- data.frame("Año" = sample_data$RS)
+Huesped <- data.frame("Huesped" = sample_data$Huesped)
+rownames(Huesped) <- sample_data$ID
+
+
+##### Info para el hm2 #####
+Año <- data.frame("Año" = sample_data$Año)
 rownames(Año) <- sample_data$ID
 
-Año$año <- as.character(Año$año)
+Año$Año <- as.character(Año$Año)
 
-str(Country)
+str(Año)
 
-#Personaliza una paleta de colores
+Majorclade <- data.frame("Clado_principal" = sample_data$Clado)
+rownames(Majorclade) <- sample_data$ID
+
+Minorclade <- data.frame("Clado_menor" = sample_data$Subclado)
+rownames(Minorclade) <- sample_data$ID
+
+#####  Personalización de paletas de colores #####
+
 custom_palette <- c("#FF0000", "#00FF00", "#0000FF", "#800000", "#00FFFF", "#B0C4DE",
                     "#FFD700", "#FF1493", "#8B008B", "cadetblue4", "#8B8B00", "#4169E1",
-                    "#00FA9A", "lightpink", "#FF4500")
+                    "#00FA9A", "lightpink", "#FF4500", "#BA55D3", "#458B00", "#A0522D", "#CD6600", "#1E90FF",
+                    "#00008B", "#EE3B3B", "#EEC591","#8b4513")
 
-#Personaliza una segunda paleta de colores
-custom_palette2 <- c("wheat4", "black","orange2", "#8b0000", "orangered2", "#4b0082",
-                     "#006400", "royalblue4", "#8b4513", "#2e8b57", "magenta4", "salmon1",
+
+custom_palette2 <- c("black","orange2", "magenta4", "#1E90FF", "#2e8b57", "orangered2", "#4b0082",
+                     "#006400", "royalblue4", "#8b4513",   "salmon1",
                      "magenta", "gray26")
 
-#1
-phylo_rab <-  ggtree(rab_cenasa, 
+custom_palette3 <- c("#00008B", "#EE3B3B", "#EEC591", "#009ACD", "#A2CD5A", "#2F4F4F", "#8DEEEE")
+
+custom_palette4 <- c("#556B2F", "#9932CC")
+
+custom_palette5 <- c("#FF8C00", "#1E90FF", "#8B7500", "#BA55D3")
+
+
+
+######################Arbol con Raíz #########################################
+rab_cenasa2 <- root(rab_cenasa, outgroup = "OU524430_ABLV", resolve.root = TRUE)
+
+is.rooted(rab_cenasa2)
+
+rab_cenasa2 <- ggtree(rab_cenasa, layout = "rect",  branch.length = 'none', size = .5) + 
+  geom_rootedge(rootedge = 0.05, size = 2, color = "black")
+
+phylo_rab2 <- rab_cenasa2 %<+% sample_data + 
+  aes(color = Clado) +
+  xlim(-8,  23) +
+  #geom_tiplab(color = "black", size = 3, align = TRUE, offset = 0) + 
+  geom_tiplab(aes(color = Subclado), size = 3.3, align = TRUE, offset = 0.1) +
+  scale_color_manual(values = c("Bats" = "brown1",
+                                "Cosmopolitan" = "cyan",
+                                "Bats DR" = "black", 
+                                "Bats TB1" = "green3", 
+                                "Cosmopolitan Vac2" = "dodgerblue", 
+                                "Desconocido" = "darkorchid2",
+                                "RAC-SK" = "#B8860B",
+                                "Indian-Sub" = "#8FBC8F",
+                                "Cosmopolitan Vac" = "#FF7F00",
+                                "ABLV" = "blue4",
+                                "ABLV" = "#87CEFA",
+                                "Artic" = "#2E8B57",
+                                "Artic A" = "#4b0082",
+                                "Africa-3" = "#009ACD",
+                                "Africa-2" = "#EE4000")) + 
+  #(color = Subclado, size = 3, align = TRUE, offset = 0.3) +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        plot.title = element_text(size = 15,
+                                  face = "bold",
+                                  hjust = 0.5,
+                                  vjust = -15),
+        legend.box = "vertical", legend.margin = margin()) +
+  geom_rootedge(rootedge = 1, size = 0.5, color = "black") + #Tamaño de raíz
+  geom_text2(aes(subset=!isTip, label=label), size = 3, hjust = 0, vjust = 1, color="black")  #Valor boostrap +
+#labs(title = "Análisis filogenético del gen de Glucoproteina de muestras de rabia del CENASA")#, caption = "Marco Hernández | Patricia Mora | \n| 2024 | Biología molecular y Secuenciación | CENASA ") 
+
+
+phylo_rab2
+
+
+######################Arbol sin raíz############################################
+phylo_rab <-  ggplot(rab_cenasa, 
        #layout = "rect",  
        layout = "circular",
        #layout = "roundrect",
        branch.length = 'none',
-        size = 1) %<+% sample_data +
-  #aes(color = Estado) +
-     xlim(-5, 40) +
-  geom_tiplab(color = "black", size = 4, align = TRUE, offset = 0.2) +
+        size = .5) %<+% sample_data +
+    aes(color = Clado) +
+     xlim(-15,  NA) +
+  #geom_tiplab(color = "black", size = 3, align = TRUE, offset = 0) + 
+  geom_tiplab(aes(color = Subclado), size = 2.8, align = TRUE, offset = 0.2) +
+  scale_color_manual(values = c("Bats" = "brown1",
+                                "Cosmopolitan" = "cyan",
+                                "Bats DR" = "black", 
+                                "Bats TB1" = "green3", 
+                                "Cosmopolitan Vac2" = "dodgerblue", 
+                                "Desconocido" = "darkorchid2",
+                                "RAC-SK" = "#B8860B",
+                                "Indian-Sub" = "#8FBC8F",
+                                "Cosmopolitan Vac" = "#FF7F00",
+                                "ABLV" = "blue4",
+                                "ABLV" = "#87CEFA",
+                                "Artic" = "#2E8B57",
+                                "Artic A" = "#4b0082",
+                                "Africa-3" = "#009ACD",
+                                "Africa-2" = "#EE4000")) + 
+#(color = Subclado, size = 3, align = TRUE, offset = 0.3) +
   theme(axis.title.x = element_blank(),
          axis.title.y = element_blank(),
          plot.title = element_text(size = 15,
                                    face = "bold",
                                    hjust = 0.5,
                                    vjust = -15),
-         legend.box = "vertical", legend.margin = margin()) #+
-  #geom_tippoint(mapping = aes(color = Estado), size = 2.7)       # color de la punta por continente Puedes cambiar la forma añadiendo "shape = "
-    
-#  guides(fill = guide_legend(title = "Genes y mutaciones"))
-    #     new_scale_fill() +
-        # geom_tippoint(aes(fill=Año, shape = 21, size=4)) +
-  #geom_text2(aes(subset=!isTip, label=label), size = 3.5, hjust = -.05, vjust = -0.5)  #Agregar el valor de boostrap +
-  #labs(title = "Comparación filogenética del gen de Nucleoproteina de rabia \n aislada de muestras del CENASA")#, caption = "Marco Hernández | Patricia Mora | \n| 2024 | Dpto. de Biología Molecular | Área de Secuenciación Masiva y Bioinformática | CENASA ") 
+         legend.box = "vertical", legend.margin = margin()) +
+  # geom_cladelabel(node=103, label="3 SNP's", #Anotación externa de nodos
+  #                 color="red2", offset=16, align=TRUE) + 
+  # geom_cladelabel(node=176, label="8 SNP's", 
+  #                 color="blue", offset=2.4, align=TRUE) +
+geom_text2(aes(subset=!isTip, label=label), size = 3, hjust = 0, vjust = 1, color="black")  #Valor boostrap 
 
-#Visualizar el arbol
 phylo_rab
 
-#Agregar capas de color a las ramas
- phylo_rab + geom_highlight(node = 5, fill = 'red', type  = "gradient", linetype = 3,
-                            alpha = .7, extend=0.5) +
-#            geom_highlight(node = 12, fill = '#7FFF00', type  = "gradient", linetype = 3,
-#                  alpha = .7, extend=0.5) 
+##### Configuración de HM ######
 
-hm <- gheatmap(phylo_rab, Country,
-               offset = 4,
+hm <- gheatmap(phylo_rab2, Country,
+               offset = 2,
                width = 0.05,
                colnames_angle = 100,
                colnames_offset_y = .25,
@@ -109,56 +182,47 @@ hm <- gheatmap(phylo_rab, Country,
   #scale_fill_viridis_d(option = "H", name = "Estado") +
   theme(plot.title = element_text(hjust = 0.5,
                                   size = 15)) +
-  guides(fill = guide_legend(title = "Estado", hjust = 0.5)) +
+  guides(fill = guide_legend(title = "Estado", hjust = 0.5, order = 1)) +
   #theme(guide_legend = element_text(hjust = 0.5)) +
-  theme(legend.position = c(0.95, 0.5)) +
-  theme(  legend.title = element_text(size = 12, hjust = 0.5),
-          legend.text = element_text(size = 12, hjust = 0.5))
+  theme(legend.position = c(0.9, 0.5)) +
+  theme(  legend.title = element_text(size = 11, hjust = 0.5),
+          legend.text = element_text(size = 10, hjust = 0.5))
 #geom_tiplab(aes(label = "Especie"), color = "blue", offset = 6, size = 3.5, linetype = "blank", geom = "text") 
 
 hm 
 
-#Agregar un segundo hm
-  h1 <- hm + new_scale_fill() 
+  h1 <- hm + new_scale_fill()  #Agregar nueva escala de colores
   
-  ####sEGUNDO NIVEL
-  hm2 <- gheatmap(h1, Año,
-                  offset = 6,
+  ##### Segundo nivel #####
+  hm2 <- gheatmap(h1, Huesped,
+                  offset = 2.9,
                   width = 0.05,
                   colnames = FALSE) +
     scale_fill_manual(values = custom_palette2) +
     theme(plot.title = element_text(hjust = 0.5,
                                     size = 15)) +
-    guides(fill = guide_legend(title = "RS", hjust = 0.5)) +
-    #theme(legend.position = c(0.95, 0.5)) +
-    theme(  legend.title = element_text(size = 12, hjust = 0.5),
-            legend.text = element_text(size = 12, hjust = 0.5))
+    guides(fill = guide_legend(title = "Huesped", hjust = 0.5, order = 2)) +
+    theme(legend.position = c(0.92, 0.5)) +
+    theme(  legend.title = element_text(size = 10, hjust = 0.5),
+            legend.text = element_text(size = 9, hjust = 0.5))
   
   hm2 
-  
-hm2 + geom_highlight(node = c(1,2,3,4,5,60,61,62), fill= 'pink', type = "gradient", linetype = 3,
+
+##### Rezaltar ramas de la filogenia #####
+
+ hm2 + geom_highlight(node = c(103), fill = 'gold4', type  = "gradient", linetype = 3,
+                             alpha = .7, extend=0.5) +
+    geom_highlight(node = c(176), fill = 'red', type  = "gradient", linetype = 3,
+                   alpha = .7, extend=0.5) +
+    geom_highlight(node = c(130), fill= 'orange', type = "gradient", linetype = 3,
                    alpha = .7, extend=0.5, extendto = 0.5) +
-  geom_highlight(node = c(29,34,26,15,16,25,27,28,39,31,32,33,24,30,36), fill= 'steelblue', type = "gradient", linetype = 3,
+    geom_highlight(node = c(149), fill= 'darkgreen', type = "gradient", linetype = 3,
                  alpha = .7, extend=0.5) +
-  geom_highlight(node = c(44,46,47), fill= 'darkgreen', type = "gradient", gradient.direction = 'rt',
+  geom_highlight(node = c(150), fill= 'yellow', type = "gradient", gradient.direction = 'rt',
                  alpha = .7, extend=0.5) +
-  geom_highlight(node = c(52,53), fill= 'yellow', type = "gradient", linetype = 3,
-                       alpha = .7, extend=0.5, extendto = 0.5) +
-  geom_highlight(node = c(49,48,50,51), fill= 'black', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5)  +
-  geom_highlight(node = c(54,55,56,57,58), fill= 'red', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5)  +
-  geom_highlight(node = c(20,19,17,15,16,18,21,22,23), fill= 'orange', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5) +
-  geom_highlight(node = c(7,8,9,10), fill= 'green', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5)  +
-  geom_highlight(node = c(11,12), fill= '#838B86', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5)  +
-  geom_highlight(node = c(39,35,36), fill= 'indianred', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5)  +
-  geom_highlight(node = c(13,14), fill= 'maroon4', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5)  +
-  geom_highlight(node = c(37,38,36,39), fill= 'palegreen', type = "gradient", linetype = 3,
-                 alpha = .7, extend=0.5, extendto = 0.5) +
-  geom_highlight(node = c(78), fill= 'snow', type = "gradient", linetype = 3,
-                 alpha = .6, extend=0.5, extendto = 0.1) 
+    geom_highlight(node = c(125), fill= 'maroon4', type = "gradient", linetype = 3,
+                   alpha = .7, extend=0.5, extendto = 0.5)
+
+
+
+
