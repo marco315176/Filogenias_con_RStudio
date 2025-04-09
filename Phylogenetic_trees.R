@@ -144,20 +144,13 @@ phylo_rab2 <- rab_cenasa2 %<+% sample_data +
         legend.box = "vertical", legend.margin = margin()) +
     geom_rootedge(rootedge = 1, size = 0.5, color = "black") + #Tamaño de raíz
   geom_text2(aes(subset=!isTip, label=label), size = 3.5, hjust = 0, vjust = 1, color="black") + #Valor boostrap +
-  geom_cladelabel(node=16, label="C. perfringens", #Anotación externa de nodos
-                  color="red2", offset=5, align=TRUE) +
-  geom_cladelabel(node=18, label="P. sordellii", #Anotación externa de nodos
-                  color="steelblue", offset=5, align=TRUE) +
-  geom_cladelabel(node=1, label="C. botulinum", #Anotación externa de nodos
-                  color="darkgreen", offset=5, align=TRUE) +
-  geom_cladelabel(node=2, label="C. botulinum", #Anotación externa de nodos
-                  color="darkgreen", offset=5, align=TRUE) +
-  geom_cladelabel(node=11, label="C. botulinum", #Anotación externa de nodos
-                  color="darkgreen", offset=5, align=TRUE) +
-  geom_cladelabel(node=10, label="C. botulinum", #Anotación externa de nodos
-                  color="darkgreen", offset=5, align=TRUE)
+   geom_cladelabel(node=18, label="C. perfringens", #Anotación externa de nodos
+                  color="red2", offset=3, align=TRUE) +
+  geom_cladelabel(node=20, label="P. sordellii", #Anotación externa de nodos
+                  color="steelblue", offset=3, align=TRUE) +
+  geom_cladelabel(node=15, label="C. botulinum", #Anotación externa de nodos
+                  color="darkgreen", offset=3, align=TRUE) 
 #labs(title = "Análisis filogenético del gen de Glucoproteina de muestras de rabia del CENASA")#, caption = "Marco Hernández | Patricia Mora | \n| 2024 | Biología molecular y Secuenciación | CENASA ") 
-
 
 phylo_rab2
 
