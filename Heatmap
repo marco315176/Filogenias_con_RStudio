@@ -1,0 +1,29 @@
+library(readxl)
+library(dplyr)
+library(pheatmap)
+library(RColorBrewer)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(colorspace)
+library(grid)
+
+Corr <- read.csv("Documentos/tmp/Fenot_heatmap.csv", check.names = F) #Necesario cargar archivos .csv
+
+row.names(Corr) <- Corr[,1] #Seleccionar nombres de filas
+
+Corr_2 <- Corr[,-1] #Quitar primera columna
+
+Corr_matrix <- data.matrix(Corr_2) #Volver a matrix los datos
+
+
+pheatmap(Corr_matrix,
+         #display_numbers = TRUE,
+         #number_color = "black",
+         #fontsize_number = 8,
+         color = colorRampPalette(c('blue','white','firebrick')) (100),
+         fontsize_col = 10,
+         show_rownames = T,
+         cluster_cols = F,
+         cluster_rows = F,)
+#         main = "Heatmap")
