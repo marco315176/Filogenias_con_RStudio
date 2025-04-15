@@ -27,3 +27,83 @@ pheatmap(Corr_matrix,
          cluster_cols = F,
          cluster_rows = F,)
 #         main = "Heatmap")
+
+#####################################################################################################################
+                                         Heatmap con anotaciones
+######################################################################################################################
+
+library(readxl)
+library(dplyr)
+library(pheatmap)
+library(RColorBrewer)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(colorspace)
+library(grid)
+library(readr)
+library()
+
+install.packages("ComplexHeatmap")
+
+#################################################################################
+Corr <- read.csv("Documentos/tmp/Genes_heatmap.csv") #Necesario cargar archivos .csv
+
+row.names(Corr) <- Corr[,1] #Seleccionar nombres de filas
+
+Corr_2 <- Corr[,-1] #Quitar primera columna
+
+Corr_matrix <- data.matrix(Corr_2) #Volver a matrix los datos
+
+##################################################################################
+
+genes_categorias <- data.frame(
+  Categoria = c(
+    rep("Aminoglucósidos", 12),
+    "Penicilinas",
+    rep("Penicilinas-Cefalosporinas", 4),
+    rep("Penicilinas", 2),
+    rep("Fenicoles", 2),
+    rep("Macrólidos", 2),
+    rep("Tetraciclinas", 3),
+    "Polimixinas",
+    rep("Quinolonas", 11)
+  )
+)
+
+rownames(genes_categorias) <- c(
+  "aac.6...Iaa", "aac.3..IId", "aac.3..IV", "aadA1", "aadA2", "aadA2b", "aadA5", "aadA7",
+  "aph.3....Ib", "aph.3...Ia", "aph.4..Ia", "aph.6..Id",
+  "blaCARB.2", "blaCMY.2", "blaCTX.M.14", "blaCTX.M.55", "blaCTX.M.65",
+  "blaLAP.2", "blaTEM.1B",
+  "cmlA1", "floR",
+  "mph.A.", "mph.B.",
+  "tet.A.", "tet.B.", "tet.G.",
+  "mcr.1.1",
+  "qnrA1", "qnrB19", "qnrB5", "qnrB81", "qnrS1",
+  "parC.T57S", "gyrA.D87G", "gyrA.D87N", "gyrA.D87Y", "gyrA.S83F", "gyrA.S83Y"
+)
+
+
+ann_colors = list(
+    Categoria = c("Aminoglucósidos" = "#1B9E77", "Penicilinas" = "#D95F02", 
+                  "Penicilinas-Cefalosporinas" = "#7FFFD4", "Fenicoles" = "#7FFF00", 
+                  "Macrólidos" = "#9932CC", "Tetraciclinas" = "#FFB6C1", 
+                  "Polimixinas" = "#FFFF00", "Quinolonas" =  "black"))
+
+
+###################################################################################
+pheatmap(Corr_matrix,
+         display_numbers = TRUE,
+         number_color = "black",
+         fontsize_number = 8,
+         color = colorRampPalette(c('blue','white','firebrick')) (100),
+         fontsize_col = 10,
+         show_rownames = T,
+         cluster_cols = F,
+         cluster_rows = F,
+         annotation_col = genes_categorias,
+         annotation_colors = ann_colors,)
+         #main = "Genes distribuidos por serotipo"))
+#         
+
