@@ -24,10 +24,23 @@ mex_map_rabia <- mex_map %>%
 
 #Gráfico
 
+################## Datos numéricos (Número de sp., de positivos, etc) ############################
+#ggplot(data = mex_map_rabia) +
+ # geom_sf(aes(fill = positivos)) +
+  #scale_fill_viridis_c(option = "plasma", na.value = "white") +
+  #theme_bw() +
+  #annotation_north_arrow(location='tr') +
+  #annotation_scale() +
+  #labs(title = "Distribución de muestras positivas a rabia",
+  #     fill = "Positivos")
+
+
+################## Datos cualitativos (Tipo, variante, etc) ########################
 ggplot(data = mex_map_rabia) +
   geom_sf(aes(fill = Subclado)) +
   scale_fill_brewer("Clados por municipio", palette = "Set1", na.value = "grey90") +
   annotation_north_arrow(location='tr') +
   annotation_scale() +
   theme_bw() 
-  #labs(title = "Variante de rabia dominante por municipio")
+  #labs(title = "Variante de rabia dominante por municipio",
+   #    fill = "Variante")
