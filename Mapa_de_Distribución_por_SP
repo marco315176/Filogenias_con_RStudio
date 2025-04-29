@@ -9,6 +9,10 @@ library(readxl)
 
 mex_map <- st_read("Documentos/covid-19-mx-map/datos_covid/01_32_mun.shp")
 
+mex_map %>%
+  ggplot() +
+  geom_sf()
+
 #Cargar datos
 
 positivos <- read_xlsx("Documentos/RABV/Dist_Map_Mex.xlsx")
