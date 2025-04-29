@@ -1,0 +1,29 @@
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(ggspatial)
+library(readr)
+library(readxl)
+
+#Cargar el mapa de la Rep. Méx. Disponible en: https://github.com/prestevez/covid-19-mx-map
+
+mex_map <- st_read("Documentos/covid-19-mx-map/datos_covid/01_32_mun.shp")
+
+#Cargar datos
+
+positivos <- read_xlsx("Documentos/RABV/Dist_Map_Mex.xlsx")
+
+positivos$CVEGEO <- as.character(positivos$CVEGEO)
+
+mex_map_rabia <- mex_map %>%
+  left_join(positivos, by = "CVEGEO")
+
+#Gráfico
+
+ggplot(data = mex_map_rabia) +
+  geom_sf(aes(fill = Subclado)) +
+  scale_fill_brewer("Clados por municipio", palette = "Set1", na.value = "grey90") +
+  annotation_north_arrow(location='tr') +
+  annotation_scale() +
+  theme_bw() 
+  #labs(title = "Variante de rabia dominante por municipio")
