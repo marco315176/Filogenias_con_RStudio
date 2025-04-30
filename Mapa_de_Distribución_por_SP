@@ -5,9 +5,11 @@ library(ggspatial)
 library(readr)
 library(readxl)
 
-#Cargar el mapa de la Rep. Méx. Disponible en: https://github.com/prestevez/covid-19-mx-map
+#Cargar el mapa de la Rep. Méx. por municipios Disponible en: https://github.com/prestevez/covid-19-mx-map
+#Por estados: https://www.inegi.org.mx/app/mapa/espacioydatos/
 
 mex_map <- st_read("Documentos/covid-19-mx-map/datos_covid/01_32_mun.shp")
+estados_mex <- st_read("Descargas/INEGI_Estatal_.shp") 
 
 mex_map %>%
   ggplot() +
@@ -44,3 +46,18 @@ ggplot(data = mex_map_rabia) +
   theme_bw() 
   #labs(title = "Variante de rabia dominante por municipio",
    #    fill = "Variante")
+
+############### Si se quiere hacer un mapa con delimitaciones estatales también ################
+ggplot(data = mex_map_rabia) +
+  geom_sf(aes(fill = Subclado), color = "grey80", size = 0.1) +
+  geom_sf(data = estados_mex, fill = NA, color = "black", size = 1.5) +
+  scale_fill_brewer("Clados por municipio", palette = "Set1", na.value = "white") +
+  annotation_north_arrow(location='tr') +
+  annotation_scale() +
+  theme_bw()
+
+
+
+
+
+
