@@ -154,9 +154,67 @@ phylo_rab2 <- rab_cenasa2 %<+% sample_data +
 
 phylo_rab2
 
+############# hm1 ###############
+
+hm <- gheatmap(phylo_rab2, Country,
+               offset = 0.5,
+               width = 0.05,
+               colnames_angle = 100,
+               colnames_offset_y = .25,
+               colnames = FALSE) +
+  theme_tree() +
+  scale_fill_manual(values = custom_palette) +
+  #scale_fill_viridis_d(option = "H", name = "Estado") +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15)) +
+  guides(fill = guide_legend(title = "Estado", hjust = 0.5, order = 1)) +
+  #theme(guide_legend = element_text(hjust = 0.5)) +
+  theme(legend.position = c(0.85, 0.5)) +
+  theme(  legend.title = element_text(size = 12, hjust = 0.5),
+          legend.text = element_text(size = 12, hjust = 0.5))
+#geom_tiplab(aes(label = "Especie"), color = "blue", offset = 6, size = 3.5, linetype = "blank", geom = "text") 
+
+hm 
+
+################ hm2 ########################
+
+h1 <- hm + new_scale_fill()
+
+hm2 <- gheatmap(h1, Municipio,
+                offset = 1,
+                width = 0.05,
+                colnames = FALSE) +
+  scale_fill_manual(values = custom_palette2) +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15)) +
+  guides(fill = guide_legend(title = "Municipio", hjust = 0.5, order = 2)) +
+  theme(legend.position = c(0.85, 0.5)) +
+  theme(  legend.title = element_text(size = 12, hjust = 0.5),
+          legend.text = element_text(size = 12, hjust = 0.5))
+
+hm2 
+
+############### hm3 ###################
+
+h3 <- hm2 + new_scale_fill()
+
+hm4 <- gheatmap(h3, Año,
+                offset = 1.5,
+                width = 0.05,
+                colnames = FALSE) +
+  scale_fill_manual(values = custom_palette3) +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15)) +
+  guides(fill = guide_legend(title = "Año de obtención", hjust = 0.5, order = 3)) +
+  theme(legend.position = c(0.89, 0.5)) +
+  theme(  legend.title = element_text(size = 11, hjust = 0.5),
+          legend.text = element_text(size = 10, hjust = 0.5))
+
+hm4
+
 ##### Rezaltar ramas de la filogenia #####
 
-phylo_rab2 + geom_highlight(node = c(3), fill = 'gold4', type  = "gradient", linetype = 3,
+hm4 + geom_highlight(node = c(3), fill = 'gold4', type  = "gradient", linetype = 3,
                      alpha = .7, extend=0.5) +
   geom_highlight(node = c(6), fill = 'orange', type  = "gradient", linetype = 3,
                  alpha = .7, extend=0.5) 
