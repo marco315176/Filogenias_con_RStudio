@@ -56,7 +56,31 @@ ggplot(data = mex_map_rabia) +
   annotation_scale() +
   theme_bw()
 
+##################### Mapa de relieve con datos  ###############################
+relieve_map$RANGO <- factor(relieve_map$RANGO, 
+                            levels = c("0 a 200", "200 a 500", "500 a 1000", "1000 a 1500", "1500 a 2000"))
 
+Mapa_dist_altitud <- ggplot(data = mex_map_rabia) +
+  geom_sf(data = relieve_map, aes(color = RANGO), fill = NA) +   # relleno elevación
+  geom_sf(data = mex_map_rabia, aes(fill = Subclado), color = "grey80", size = 0.1) +  # contornos municipios coloreados
+  geom_sf(data = estados_mex, fill = NA, color = "black", size = 5) +          # contorno estados
+  scale_color_manual(
+    values = c(
+      "0 a 200" = "#1E90FF",
+      "200 a 500" = "green",
+      "500 a 1000" = "orange",
+      "1000 a 1500" = "red",
+      "1500 a 2000" = "#4b0082"
+    ),
+    na.value = "white",
+    name = "Elevación (m)"
+  ) +
+  scale_fill_viridis_d(option = "H", name = "Clados por municipio") +
+  annotation_north_arrow(location = "tr") +
+  annotation_scale(location = "bl") +
+  theme_bw()
+
+Mapa_dist_altitud
 
 
 
