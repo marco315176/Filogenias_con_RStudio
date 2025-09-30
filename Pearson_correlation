@@ -32,8 +32,10 @@ resultados <- Rabia %>%
   group_by(Especie) %>%
   summarise(
     cor_Intensidad_CT = cor(Intensidad, CT, method = "pearson"),
-    cor_Longitud_CT = cor(Longitud, CT, method = "pearson")
+    cor_Longitud_CT = cor(Longitud, CT, method = "pearson"),
+    corr_Long_Intensidad = cor(Longitud, Intensidad, method = "pearson")
   )
+
 
 print(resultados)
 
