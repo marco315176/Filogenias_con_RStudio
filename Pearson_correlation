@@ -42,11 +42,6 @@ print(resultados)
 Rabia <- Rabia %>%
   left_join(resultados, by = "Especie")
 ####################################################
-p <- cor(CT, Intensidad, method = "pearson")
-
-pL <- cor(CT, Longitud, method = "pearson")
-
-str(Rabia)
 
 Rabia$ID <- as.character(Rabia$ID)
 
@@ -96,6 +91,27 @@ CI <- ggplot(Rabia, aes(x = Intensidad,
   facet_wrap(~ Especie) +
   geom_text(data = resultados, aes(x = 3.5, y = 36, label = paste("r =", round(cor_Intensidad_CT, 2))),
             color = "black", size = 5, hjust = 1)
+
+LI <- ggplot(Rabia, aes(x = Intensidad, 
+                        y =  Longitud, 
+                        colour = Especie,
+                        shape = Especie)) +
+  geom_point(size = 3) +
+  theme_linedraw() +
+  scale_y_continuous(breaks = seq(0, 12000, 400)) +
+  scale_x_continuous(breaks = seq(0, 4, 1)) +
+  labs(x="Intensidad (Prueba de IFD)", y="Longitud del contig (Secuenciación)") +
+  #ggtitle("Correlación entre longitud del contig y CT en muestras de rabia secuenciadas") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.position = "none",
+        strip.text = element_text(size = 16, face = "bold"),
+        strip.background = element_rect(fill = "black")) +
+  stat_smooth(method = "lm", se = FALSE,
+              size = 1) +
+  facet_wrap(~Especie, scales = "free_x") 
+
+LI 
 
 
 CI
